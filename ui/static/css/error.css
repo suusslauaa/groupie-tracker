@@ -1,0 +1,44 @@
+* {
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+}
+
+.header-name {
+    color: white;
+}
+
+main {
+    color: white;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+footer {
+    position: sticky;
+    bottom: 0;
+}
+
+.author {
+    color: white;
+}
+
+html {
+    background-color: #070F2B;
+}
+
+html, body, main {
+    height:100%;
+}
+
+body {
+    align-items: center;
+}
+
+.text {
+    text-align: center;
+}

@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Name}}</title>
     <link rel="stylesheet" href="../static/css/artist.css">
+    <title>{{.Name}}</title>
 </head>
 <body>
     <header>
-        <a href="/">GROUPIE TRACKER</a>
+        <a href="/" class="header-name">GROUPIE TRACKER</a>
     </header>
     <main>
-        <img src="{{.Image}}" alt="Изображение">
-        {{.CreationDate}}
-        {{.FirstAlbum}}
-        {{range .Members}}
-            {{.}}
-        {{end}}
-        {{range $key, $value := .Relations}}
-            {{$key}}
-            {{range $value}}
-                {{.}}
-            {{end}}
-        {{end}}
+        <div class="obl">
+            <img src="{{.Image}}" alt="Изображение">
+            {{.Name}}
+        </div>
+        <div class="info">
+            {{.CreationDate}}{{.FirstAlbum}}{{.Members}}{{.Relations}}
+        </div>
     </main>
     <footer>
-        <a href="https://github.com/suusslauaa">suusslauaa</a>
+        <a href="https://github.com/suusslauaa" class="author">suusslauaa</a>
     </footer>
 </body>
 </html>

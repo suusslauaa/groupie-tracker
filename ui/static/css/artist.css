@@ -1,0 +1,52 @@
+* {
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+}
+
+.header-name {
+    color: white;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    color: white;
+}
+
+footer {
+    position: sticky;
+    bottom: 0;
+    /* width: 100%;
+    */
+    /*align-items: center; */
+    /* background-image: linear-gradient(90deg, #af2896, #509bf5); */
+    /* display: flex; */
+    /* color: white; */
+    /* padding-left: 20px; */
+}
+
+.author {
+    color: white;
+}
+
+html {
+    background-color: #070F2B;
+}
+
+img {
+    border-radius: 100%;
+    margin: 15%;
+}
+
+.obl {
+    text-align: center;
+}
+
+.info {
+    margin-top: 10%;
+}

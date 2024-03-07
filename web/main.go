@@ -14,8 +14,8 @@ type application struct {
 }
 
 type helper struct {
-	text string
-	code int
+	Text string
+	Code int
 }
 
 var (

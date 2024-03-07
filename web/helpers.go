@@ -23,8 +23,8 @@ func (app *application) notFound(w http.ResponseWriter) {
 
 func (app *application) errors(w http.ResponseWriter, message string, status int) {
 	help := helper{
-		text: message,
-		code: status,
+		Text: message,
+		Code: status,
 	}
 
 	app.errorLog.Printf("%s: %d", message, status)
