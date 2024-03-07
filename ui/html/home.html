@@ -8,18 +8,20 @@
 </head>
 <body>
     <header>
-        <a href="/">GROUPIE TRACKER</a>
+        <a href="/" class="header-name">GROUPIE TRACKER</a>
     </header>
     <main>
         {{range .}}
             <a href="/artist?id={{.Id}}">
-                <img src="{{.Image}}" alt="Изображение">
-                {{.Name}}
+                <div class="obl">
+                    <img src="{{.Image}}" alt="Изображение">
+                    {{.Name}}
+                </div>
             </a>
         {{end}}
     </main>
     <footer>
-        <a href="https://github.com/suusslauaa">suusslauaa</a>
+        <a href="https://github.com/suusslauaa" class="author">suusslauaa</a>
     </footer>
 </body>
 </html>
