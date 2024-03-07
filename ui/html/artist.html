@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{.Name}}</title>
+    <link rel="stylesheet" href="../static/css/artist.css">
 </head>
 <body>
-    
+    <header>
+        <a href="/">GROUPIE TRACKER</a>
+    </header>
+    <main>
+        <img src="{{.Image}}" alt="Изображение">
+        {{.CreationDate}}
+        {{.FirstAlbum}}
+        {{range .Members}}
+            {{.}}
+        {{end}}
+        {{range $key, $value := .Relations}}
+            {{$key}}
+            {{range $value}}
+                {{.}}
+            {{end}}
+        {{end}}
+    </main>
+    <footer>
+        <a href="https://github.com/suusslauaa">suusslauaa</a>
+    </footer>
 </body>
 </html>

@@ -23,9 +23,11 @@ var (
 	err       error
 )
 
-func (app *application) init() {
-	templates, err = template.ParseGlob("ui/html/*.html")
-	app.errorLog.Fatal(err)
+func init() {
+	templates, err = template.ParseGlob("./ui/html/*.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
