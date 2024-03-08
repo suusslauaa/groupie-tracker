@@ -16,7 +16,51 @@
             {{.Name}}
         </div>
         <div class="info">
-            {{.CreationDate}}{{.FirstAlbum}}{{.Members}}{{.Relations}}
+            <div>
+                Creation Date: {{.CreationDate}}
+            </div>
+            <div>
+                First Album: {{.FirstAlbum}}
+            </div>
+            <div>
+                <details>
+                    <summary>
+                        Members:
+                    </summary>
+                    <ul>
+                        {{range .Members}}
+                            <li>
+                                {{.}}
+                            </li>
+                        {{end}}
+                    </ul>
+                </details>
+            </div>
+            <div>
+                <details>
+                    <summary>
+                        Concert locations and dates:
+                    </summary>
+                    <ul>
+                        {{range $Location, $Date := .Relations}}
+                            <li>
+                                <details>
+                                    <summary>
+                                        {{$Location}}
+                                    </summary>
+                                    <ul>
+                                        {{range $Date}}
+                                        <li>
+                                            {{.}}
+                                        </li>
+                                        {{end}}
+                                    </ul>
+                                </details>
+                            </li>
+                        {{end}}
+                    </ul>
+                </details>
+            </div>    
         </div>
     </main>
     <footer>
