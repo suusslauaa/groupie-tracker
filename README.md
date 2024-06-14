@@ -25,8 +25,9 @@ student@ALEM:~$ git clone git@git.01.alem.school:aserikbay/groupie-tracker.git
 ```console
 student@ALEM:~$ cd groupie-tracker/
 ```
-- run the program `go run ./web`
+- run the program `go run .`
 ```console
-student@ALEM:~$ go run ./web
+student@ALEM:~$ go run .
 ```
+- if you want change the port add `-addr :PORT` flag, like this `go run . -addr :8080` 
 - follow the [link](http://localhost:4000/) on terminal
