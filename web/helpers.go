@@ -1,35 +1,53 @@
-package main
+package web
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"runtime/debug"
+	"text/template"
 )
 
-func (app *application) serverError(w http.ResponseWriter, err error) {
-	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	app.errorLog.Output(2, trace)
-
-	app.errors(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+type ApplicationError struct {
+	Message string
+	Code    int
 }
 
-func (app *application) clientError(w http.ResponseWriter, status int) {
-	app.errors(w, http.StatusText(status), status)
-}
+var (
+	templates *template.Template
+	err       error
+)
 
-func (app *application) notFound(w http.ResponseWriter) {
-	app.clientError(w, http.StatusNotFound)
-}
-
-func (app *application) errors(w http.ResponseWriter, message string, status int) {
-	help := helper{
-		Text: message,
-		Code: status,
+func init() {
+	templates, err = template.ParseGlob("./ui/html/*.html")
+	if err != nil {
+		log.Fatal(err)
 	}
+}
 
-	app.errorLog.Printf("%s: %d", message, status)
+func (app *Application) ServerError(w http.ResponseWriter, err error) {
+	trace := fmt.Sprintf("Ошибка при отправке ответа: %s\n", err.Error())
+	app.errorLog.Output(5, trace)
 
-	if err = templates.ExecuteTemplate(w, "error.html", help); err != nil {
-		app.serverError(w, err)
+	app.Errors(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
+func (app *Application) ClientError(w http.ResponseWriter, status int) {
+	app.Errors(w, http.StatusText(status), status)
+}
+
+func (app *Application) NotFound(w http.ResponseWriter) {
+	app.ClientError(w, http.StatusNotFound)
+}
+
+func (app *Application) BadRequest(w http.ResponseWriter) {
+	app.ClientError(w, http.StatusBadRequest)
+}
+
+func (app *Application) Errors(w http.ResponseWriter, errorMessage string, errorCode int) {
+	if 	err := templates.ExecuteTemplate(w, "error.html", ApplicationError {
+		Message: errorMessage,
+		Code:    errorCode,
+	}); err != nil {
+		http.Error(w, "err", http.StatusInternalServerError)
 	}
 }

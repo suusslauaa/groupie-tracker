@@ -1,0 +1,38 @@
+* {
+    text-decoration: none;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    top: 0;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.gallery-item:hover {
+    -ms-transform: scale(1.20);
+    transition: 1s;
+    -webkit-transform: scale(1.20);
+    transform: scale(1.20);
+}
+
+.gallery-item {
+    -ms-transform: scale(1);
+    transition: 1s;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+
+img {
+    border-radius: 100%;
+    margin: 15px 10px 5px 20px;
+}
+
+h3 {
+    text-align: center;
+}

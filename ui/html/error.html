@@ -1,25 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/error.css">
-    <title>{{.Text}}</title>
-</head>
-<body>
-    <header>
-        <a href="/" class="header-name">GROUPIE TRACKER</a>
-    </header>
-    <main>
-        <div class="text">
-            {{.Text}}
-        </div>
-        <div class="text">
-            {{.Code}}
-        </div>  
-    </main>
-    <footer>
-        <a href="https://github.com/suusslauaa" class="author">suusslauaa</a>
-    </footer>
-</body>
-</html>
+<title>{{.Message}}</title>
+
+<link rel="stylesheet" href="../css/error.css">
+
+<header>
+    <a href="/">
+        <h1>GROUPIE TRACKER</h1>
+    </a>
+</header>
+
+<main>
+    <div>
+        <h1>{{.Code}}</h1>
+    <div>
+    <div>
+        <h2>{{.Message}}</h2>
+    </div>
+</main>

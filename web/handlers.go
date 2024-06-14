@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"encoding/json"
@@ -6,75 +6,6 @@ import (
 	"net/http"
 	"strconv"
 )
-
-func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
-
-	if err = templates.ExecuteTemplate(w, "home.html", app.getResponse(w)); err != nil {
-		app.serverError(w, err)
-	}
-}
-
-func (app *application) artist(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		app.notFound(w)
-		return
-	}
-
-	responseData := app.getResponse(w)
-
-	artist := Artist{
-		Name:         responseData[id-1].Name,
-		Image:        responseData[id-1].Image,
-		CreationDate: responseData[id-1].CreationDate,
-		FirstAlbum:   responseData[id-1].FirstAlbum,
-		Members:      responseData[id-1].Members,
-	}
-
-	relationsResponse, err := http.Get(responseData[id-1].Relations)
-	if err != nil {
-		app.errorLog.Println("Error getting data from API:", err)
-		app.serverError(w, fmt.Errorf("failed to fetch data from API"))
-
-		return
-	}
-
-	defer relationsResponse.Body.Close()
-
-	if err := json.NewDecoder(relationsResponse.Body).Decode(&artist); err != nil {
-		app.errorLog.Println("Error decoding JSON:", err)
-		app.serverError(w, fmt.Errorf("failed to decode JSON response"))
-
-		return
-	}
-
-	if err = templates.ExecuteTemplate(w, "artist.html", artist); err != nil {
-		app.serverError(w, err)
-	}
-}
-
-func (app *application) getResponse(w http.ResponseWriter) (responseData []ResponseData) {
-	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
-	if err != nil {
-		app.errorLog.Println("Error getting data from API:", err)
-		app.serverError(w, fmt.Errorf("failed to fetch data from API"))
-
-		return
-	}
-
-	defer response.Body.Close()
-
-	if err = json.NewDecoder(response.Body).Decode(&responseData); err != nil {
-		app.errorLog.Println("Error decoding JSON:", err)
-		app.serverError(w, fmt.Errorf("failed to decode JSON response"))
-	}
-
-	return
-}
 
 type ResponseData struct {
 	Name         string   `json:"name"`
@@ -93,4 +24,77 @@ type Artist struct {
 	FirstAlbum   string
 	Members      []string
 	Relations    map[string][]string `json:"datesLocations"`
+}
+
+func (app *Application) GetResponse(w http.ResponseWriter) (responseData []ResponseData) {
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+	if err != nil {
+		app.errorLog.Println("Error getting data from API:", err)
+		app.ServerError(w, fmt.Errorf("failed to fetch data from API"))
+
+		return
+	}
+
+	defer response.Body.Close()
+
+	if err := json.NewDecoder(response.Body).Decode(&responseData); err != nil {
+		app.errorLog.Println("Error decoding JSON:", err)
+		app.ServerError(w, fmt.Errorf("failed to decode JSON response"))
+	}
+
+	return
+}
+
+func (app *Application) Home(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		app.NotFound(w)
+		return
+	}
+
+	responseData := app.GetResponse(w)
+
+	err = templates.ExecuteTemplate(w, "home.html", responseData)
+	if err != nil {
+		app.ServerError(w, err)
+	}
+}
+
+func (app *Application) Artist(w http.ResponseWriter, r *http.Request) {
+	responseData := app.GetResponse(w)
+
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id > len(responseData) || id <= 0 {
+		app.NotFound(w)
+		return
+	}
+
+	artist := Artist{
+		Name:         responseData[id-1].Name,
+		Image:        responseData[id-1].Image,
+		CreationDate: responseData[id-1].CreationDate,
+		FirstAlbum:   responseData[id-1].FirstAlbum,
+		Members:      responseData[id-1].Members,
+	}
+
+	relationsResponse, err := http.Get(responseData[id-1].Relations)
+	if err != nil {
+		app.errorLog.Println("Error getting data from API:", err)
+		app.ServerError(w, fmt.Errorf("failed to fetch data from API"))
+
+		return
+	}
+
+	defer relationsResponse.Body.Close()
+
+	if err := json.NewDecoder(relationsResponse.Body).Decode(&artist); err != nil {
+		app.errorLog.Println("Error decoding JSON:", err)
+		app.ServerError(w, fmt.Errorf("failed to decode JSON response"))
+
+		return
+	}
+
+	err = templates.ExecuteTemplate(w, "artist.html", artist)
+	if err != nil {
+		app.ServerError(w, err)
+	}
 }

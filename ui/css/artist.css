@@ -1,0 +1,21 @@
+* {
+    text-decoration: none;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    top: 0;
+}
+
+main {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+img {
+    border-radius: 100%;
+    margin: 15px 10px 5px 20px;
+    align-items: center;
+}

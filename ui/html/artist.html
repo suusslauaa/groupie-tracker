@@ -1,70 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/artist.css">
-    <title>{{.Name}}</title>
-</head>
-<body>
-    <header>
-        <a href="/" class="header-name">GROUPIE TRACKER</a>
-    </header>
-    <main>
-        <div class="obl">
-            <img src="{{.Image}}" alt="Изображение">
-            {{.Name}}
-        </div>
-        <div class="info">
-            <div>
-                Creation Date: {{.CreationDate}}
-            </div>
-            <div>
-                First Album: {{.FirstAlbum}}
-            </div>
-            <div>
-                <details>
-                    <summary>
-                        Members:
-                    </summary>
-                    <ul>
-                        {{range .Members}}
-                            <li>
-                                {{.}}
-                            </li>
-                        {{end}}
-                    </ul>
-                </details>
-            </div>
-            <div>
-                <details>
-                    <summary>
-                        Concert locations and dates:
-                    </summary>
-                    <ul>
-                        {{range $Location, $Date := .Relations}}
-                            <li>
-                                <details>
-                                    <summary>
-                                        {{$Location}}
-                                    </summary>
-                                    <ul>
-                                        {{range $Date}}
-                                        <li>
-                                            {{.}}
-                                        </li>
-                                        {{end}}
-                                    </ul>
-                                </details>
-                            </li>
-                        {{end}}
-                    </ul>
-                </details>
-            </div>    
-        </div>
-    </main>
-    <footer>
-        <a href="https://github.com/suusslauaa" class="author">suusslauaa</a>
-    </footer>
-</body>
-</html>
+<title>{{.Name}}</title>
+
+<link rel="stylesheet" href="../css/artist.css">
+
+<header>
+    <a href="/">
+        <h1>GROUPIE TRACKER</h1>
+    </a>
+</header>
+
+<main>
+    <div>
+        <img src="{{.Image}}" alt="Изображение">
+    </div>
+    <div>
+        <p>CreationDate: {{.CreationDate}}</p>
+        <p>FirstAlbum: {{.FirstAlbum}}</p>
+        <details>
+            <summary>Members:</summary>
+            <ul>{{range .Members}}<li>{{.}}</li>{{end}}</ul>
+        </details>
+        <details>
+            <summary>Concerts:</summary>
+            {{range $key, $value := .Relations}}
+            Location: {{$key}}
+            <ul>{{range $value}}<li>{{.}}</li>{{end}}</ul>
+            {{end}}
+        </details>
+    </div>
+</main>

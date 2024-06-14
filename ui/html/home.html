@@ -1,29 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/home.css">
-    <title>Home</title>
-</head>
-<body>
-    <header>
-        <div class="header">
-            <a href="/" class="header-name">GROUPIE TRACKER</a>
+<title>Groupie Tracker</title>
+
+<link rel="stylesheet" href="../css/home.css">
+
+<header>
+    <a href="/">
+        <h1>GROUPIE TRACKER</h1>
+    </a>
+</header>
+
+<main>
+    {{range .}}
+    <a href="/artist?id={{.Id}}">
+        <div class="gallery-item">
+            <img src="{{.Image}}" alt="Изображение">
+            <h3>{{.Name}}</h3>
         </div>
-    </header>
-    <main>
-        {{range .}}
-            <a href="/artist?id={{.Id}}">
-                <div class="obl">
-                    <img src="{{.Image}}" alt="Изображение">
-                    {{.Name}}
-                </div>
-            </a>
-        {{end}}
-    </main>
-    <footer>
-        <a href="https://github.com/suusslauaa" class="author">suusslauaa</a>
-    </footer>
-</body>
-</html>
+    </a>
+    {{end}}
+</main>
