@@ -51,6 +51,11 @@ func (app *Application) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method != http.MethodGet {
+		app.MethodNotAllowed(w)
+		return
+	}
+
 	responseData := app.GetResponse(w)
 
 	err = templates.ExecuteTemplate(w, "home.html", responseData)
@@ -63,8 +68,13 @@ func (app *Application) Artist(w http.ResponseWriter, r *http.Request) {
 	responseData := app.GetResponse(w)
 
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id > len(responseData) || id <= 0 {
+	if err != nil || id > len(responseData) || id <= 0 || r.URL.Query().Get("id")[0] == '0' || len(r.URL.Query()) != 1 {
 		app.NotFound(w)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		app.MethodNotAllowed(w)
 		return
 	}
 

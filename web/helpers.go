@@ -43,7 +43,12 @@ func (app *Application) BadRequest(w http.ResponseWriter) {
 	app.ClientError(w, http.StatusBadRequest)
 }
 
+func (app *Application) MethodNotAllowed(w http.ResponseWriter) {
+	app.ClientError(w, http.StatusMethodNotAllowed)
+}
+
 func (app *Application) Errors(w http.ResponseWriter, errorMessage string, errorCode int) {
+	w.WriteHeader(errorCode)
 	if 	err := templates.ExecuteTemplate(w, "error.html", ApplicationError {
 		Message: errorMessage,
 		Code:    errorCode,
