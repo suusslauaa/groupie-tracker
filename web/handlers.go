@@ -2,7 +2,7 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -26,55 +26,64 @@ type Artist struct {
 	Relations    map[string][]string `json:"datesLocations"`
 }
 
-func (app *Application) GetResponse(w http.ResponseWriter) (responseData []ResponseData) {
-	response, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
+func (app *Application) GetResponse() (responseData []ResponseData, srverr error) {
+	response, err := http.Get(app.Config.ArtistsURL)
 	if err != nil {
-		app.errorLog.Println("Error getting data from API:", err)
-		app.ServerError(w, fmt.Errorf("failed to fetch data from API"))
+		return nil, err
+	}
+	
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
 
-		return
+	if err = json.Unmarshal(bytes, &responseData); err != nil {
+		return nil, err
 	}
 
 	defer response.Body.Close()
 
-	if err := json.NewDecoder(response.Body).Decode(&responseData); err != nil {
-		app.errorLog.Println("Error decoding JSON:", err)
-		app.ServerError(w, fmt.Errorf("failed to decode JSON response"))
-	}
-
-	return
+	return responseData, nil
 }
 
 func (app *Application) Home(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		app.MethodNotAllowed(w)
+		return
+	}
+
 	if r.URL.Path != "/" {
 		app.NotFound(w)
 		return
 	}
 
-	if r.Method != http.MethodGet {
-		app.MethodNotAllowed(w)
+	responseData, err := app.GetResponse()
+	if err != nil {
+		app.InternalServerError(w, err)
 		return
 	}
 
-	responseData := app.GetResponse(w)
-
-	err = templates.ExecuteTemplate(w, "home.html", responseData)
-	if err != nil {
-		app.ServerError(w, err)
+	if err = templates.ExecuteTemplate(w, "home.html", responseData); err != nil {
+		app.InternalServerError(w, err)
+		return
 	}
 }
 
 func (app *Application) Artist(w http.ResponseWriter, r *http.Request) {
-	responseData := app.GetResponse(w)
-
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id > len(responseData) || id <= 0 || r.URL.Query().Get("id")[0] == '0' || len(r.URL.Query()) != 1 {
-		app.NotFound(w)
+	if r.Method != http.MethodGet {
+		app.MethodNotAllowed(w)
 		return
 	}
 
-	if r.Method != http.MethodGet {
-		app.MethodNotAllowed(w)
+	responseData, err := app.GetResponse()
+	if err != nil {
+		app.InternalServerError(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id > len(responseData) || id <= 0 || r.URL.Query().Get("id")[0] == '0' || len(r.URL.Query()) != 1 {
+		app.BadRequest(w)
 		return
 	}
 
@@ -88,23 +97,25 @@ func (app *Application) Artist(w http.ResponseWriter, r *http.Request) {
 
 	relationsResponse, err := http.Get(responseData[id-1].Relations)
 	if err != nil {
-		app.errorLog.Println("Error getting data from API:", err)
-		app.ServerError(w, fmt.Errorf("failed to fetch data from API"))
+		app.InternalServerError(w, err)
+		return
+	}
 
+	bytes, err := io.ReadAll(relationsResponse.Body)
+	if err != nil {
+		app.InternalServerError(w, err)
+		return
+	}
+
+	if err = json.Unmarshal(bytes, &artist); err != nil {
+		app.InternalServerError(w, err)
 		return
 	}
 
 	defer relationsResponse.Body.Close()
 
-	if err := json.NewDecoder(relationsResponse.Body).Decode(&artist); err != nil {
-		app.errorLog.Println("Error decoding JSON:", err)
-		app.ServerError(w, fmt.Errorf("failed to decode JSON response"))
-
+	if err = templates.ExecuteTemplate(w, "artist.html", artist); err != nil {
+		app.InternalServerError(w, err)
 		return
-	}
-
-	err = templates.ExecuteTemplate(w, "artist.html", artist)
-	if err != nil {
-		app.ServerError(w, err)
 	}
 }

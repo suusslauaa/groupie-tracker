@@ -42,3 +42,6 @@ student@ALEM:~$ go test
 ```console
 student@ALEM:~$ go test -v
 ```
+### Notes
+
+- 

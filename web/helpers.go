@@ -1,16 +1,47 @@
 package web
 
 import (
-	"fmt"
+	"embed"
 	"log"
 	"net/http"
 	"text/template"
 )
 
+type Application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+	Config   Config
+}
+
+type Config struct {
+	ArtistsURL string
+}
+
 type ApplicationError struct {
 	Message string
 	Code    int
 }
+
+func NewApplication(errorLog, infoLog *log.Logger) *Application {
+	return &Application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+		Config: Config{
+			ArtistsURL: "https://groupietrackers.herokuapp.com/api/artists",
+		},
+	}
+}
+
+func NewServer(addr *string, errorLog *log.Logger, mux *http.ServeMux) *http.Server {
+	return &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
+}
+
+//go:embed templates/*.html
+var fs embed.FS
 
 var (
 	templates *template.Template
@@ -18,16 +49,14 @@ var (
 )
 
 func init() {
-	templates, err = template.ParseGlob("./ui/html/*.html")
+	templates, err = template.ParseFS(fs, "templates/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (app *Application) ServerError(w http.ResponseWriter, err error) {
-	trace := fmt.Sprintf("Ошибка при отправке ответа: %s\n", err.Error())
-	app.errorLog.Output(5, trace)
-
+func (app *Application) InternalServerError(w http.ResponseWriter, err error) {
+	app.errorLog.Println(err)
 	app.Errors(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
@@ -49,10 +78,11 @@ func (app *Application) MethodNotAllowed(w http.ResponseWriter) {
 
 func (app *Application) Errors(w http.ResponseWriter, errorMessage string, errorCode int) {
 	w.WriteHeader(errorCode)
-	if 	err := templates.ExecuteTemplate(w, "error.html", ApplicationError {
+
+	if err := templates.ExecuteTemplate(w, "error.html",ApplicationError{
 		Message: errorMessage,
 		Code:    errorCode,
 	}); err != nil {
-		http.Error(w, "err", http.StatusInternalServerError)
+		http.Error(w, "internal Server Error", http.StatusInternalServerError)
 	}
 }
